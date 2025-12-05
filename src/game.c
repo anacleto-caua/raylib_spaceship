@@ -33,7 +33,7 @@ int main()
 void InitGame()
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);
-    // SetTargetFPS(FPS_TARGET);
+    SetTargetFPS(FPS_TARGET);
 
     SpawnPlayer();
 }
