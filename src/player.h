@@ -2,8 +2,8 @@
 
 #include "raylib.h"
 
-extern Camera3D camera;
-
+extern Camera3D PlayerCamera;
+extern Model PlayerModel;
 extern Vector3 PlayerPos;
 extern Vector3 CameraPos;
 extern Vector3 PlayerMovement;
@@ -20,6 +20,4 @@ void PlayerEnd();
 
 void SpawnPlayer();
 
-
 void HandleMovementInput();
-void DebugPlayerInfo();

@@ -1,12 +1,15 @@
 #include "game.h"
+#include "debug/debugger.h"
 #include "player.h"
 #include "entity.h"
-
-const int DEBUG_FONT_SIZE = 20;
+#include "raylib.h"
 
 const char* SCREEN_TITLE = "Space Race";
 const int SCREEN_WIDTH = 1200;
 const int SCREEN_HEIGHT = 720;
+
+const Vector3 VECTOR3_ZERO   = {0, 0, 0};
+const Vector3 VECTOR3_ONE   = {1, 1, 1};
 
 const Vector3 VECTOR3_FORWARD = {0, 0, 1};
 const Vector3 VECTOR3_UP      = {0, 1, 0};
@@ -30,7 +33,7 @@ int main()
 void InitGame()
 {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);
-    SetTargetFPS(FPS_TARGET);
+    // SetTargetFPS(FPS_TARGET);
 
     SpawnPlayer();
 }
@@ -38,8 +41,8 @@ void InitGame()
 void Update()
 {
     BeginDrawing();
-    ClearBackground(WHITE);
-    BeginMode3D(camera);
+    ClearBackground(PURPLE);
+    BeginMode3D(PlayerCamera);
     
     DrawGrid(100, 1.0f); 
 
@@ -51,9 +54,8 @@ void Update()
     }        
     
     EndMode3D();
-
-    DebugPlayerInfo(); // TODO: Make a more decent debug system
-
+    DrawAllDebugMessages();
+    
     DrawFPS(0, 0);
     EndDrawing();
 }
