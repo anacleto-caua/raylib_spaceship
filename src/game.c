@@ -1,5 +1,5 @@
 #include "game.h"
-#include "debug/debugger.h"
+#include "debugger/debugger.h"
 #include "player.h"
 #include "entity.h"
 #include "raylib.h"

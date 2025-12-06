@@ -1,6 +1,6 @@
 #include "player.h"
 #include <stdio.h>
-#include "debug/debugger.h"
+#include "debugger/debugger.h"
 #include "game.h"
 #include "entity.h"
 #include "raylib.h"
