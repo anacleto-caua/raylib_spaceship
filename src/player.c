@@ -16,8 +16,8 @@ Vector3 CameraPos = VEC_ZERO;
 
 float Throttle = 0;     // Throttle percent, how much both engines are working: 0 min to 1 max
 float MaxThrottle = 1;
-float ThrottleAcceleration = .1;
-float ThrottleDeAcc = .05;
+float ThrottleAcceleration = .7;
+float ThrottleDeAcc = .5;
 
 const float MAX_SPEED = 700000000;
 float Speed = 0;
@@ -27,11 +27,8 @@ float SpeedGainOnMaxThrottle = 50;
 float ThrottleAsymmetry = 0;
 float ThrottleAsymAcc = 0;
 
-const float MOUSE_FLIGHT_STICK_DEADZONE = .2f;
-float mouseX = 0;
-float mouseY = 0;
-float flightStickInputX = 0;
-float flightStickInputY = 0;
+const float FLIGHT_STICK_DEADZONE_RADIUS = .2f;
+Vector2 FlightStickInput = {0, 0};
 
 // helpers
 
@@ -60,29 +57,14 @@ void HandleMovementInput()
     Speed -= AirResistance * GetFrameTime();
 
     // Gets the mouse input from -1 to 1
-    mouseX = (((float)GetMouseX() / GetScreenWidth())  - .5) * 2;
-    mouseY = (((float)GetMouseY() / GetScreenHeight()) - .5) * 2;
+    float inputX = (((float)GetMouseX() / GetScreenWidth())  - .5) * 2;
+    float inputY = (((float)GetMouseY() / GetScreenHeight()) - .5) * 2;
+    FlightStickInput = (Vector2){ inputX, inputY };
     
-    // TODO: Since the screen isnt a square the flight stick deadzone is more of an elipse than a circle.
-    // Consider just measuring the cursor distance from the screen center
-    if(fabsf(mouseX) > MOUSE_FLIGHT_STICK_DEADZONE)
+    if(Vector2Distance(FlightStickInput, (Vector2){0, 0}) < FLIGHT_STICK_DEADZONE_RADIUS * 2)
     {
-        flightStickInputX = mouseX;
+        FlightStickInput = (Vector2){0, 0};
     }
-    else
-    {
-        flightStickInputX = 0;
-    }
-
-    if(fabsf(mouseY) > MOUSE_FLIGHT_STICK_DEADZONE)
-    {
-        flightStickInputY = mouseY;
-    }
-    else 
-    {
-        flightStickInputY = 0;
-    }
-    
     
     cap(&Speed, 0.0f, MAX_SPEED);
     cap(&Throttle, 0.0f, MaxThrottle);
@@ -120,11 +102,10 @@ void PlayerInit()
     AddDebugMsg("Speed: ", TYPE_FLOAT, &Speed);
     AddDebugMsg("Throttle: ", TYPE_FLOAT, &Throttle);
     
-    AddDebugMsg("MouseX: ", TYPE_FLOAT, &mouseX);
-    AddDebugMsg("MouseY: ", TYPE_FLOAT, &mouseY);
+    AddDebugMsg("FlightStick: ", TYPE_VECTOR2, &FlightStickInput);
 
-    AddDebugMsg("FlightStickX: ", TYPE_FLOAT, &flightStickInputX);
-    AddDebugMsg("FlightStickY: ", TYPE_FLOAT, &flightStickInputY);
+    AddDebugMsg("PlayerPos: ", TYPE_VECTOR3, &PlayerPos);
+
 }
 
 void PlayerUpdate()
