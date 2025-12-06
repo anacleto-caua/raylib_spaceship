@@ -4,7 +4,9 @@
 
 typedef enum {
     TYPE_INT,
-    TYPE_FLOAT
+    TYPE_FLOAT,
+    TYPE_VECTOR2,
+    TYPE_VECTOR3,
     // TODO: Add more types
 } DataType;
 
