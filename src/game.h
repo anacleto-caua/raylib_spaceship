@@ -1,20 +1,10 @@
 #pragma once
 
-#include "raylib.h"
+// Raylib is Right-Handed, Y-Up (OpenGL Convention)
+#define VEC_ZERO    (Vector3){ 0.0f, 0.0f, 0.0f }
+#define VEC_ONE     (Vector3){ 1.0f, 1.0f, 1.0f }
 
-extern const int SCREEN_WIDTH;
-extern const int SCREEN_HEIGHT;
-extern const char* SCREEN_TITLE;
-
-extern const Vector3 VECTOR3_ZERO;
-extern const Vector3 VECTOR3_ONE;
-
-extern const Vector3 VECTOR3_FORWARD;
-extern const Vector3 VECTOR3_UP;
-extern const Vector3 VECTOR3_RIGHT;
-
-extern int FPS_TARGET;
-
-void InitGame();
-void Update();
-void EndGame();
+// Directions
+#define VEC_RIGHT   (Vector3){ 1.0f, 0.0f, 0.0f }
+#define VEC_UP      (Vector3){ 0.0f, 1.0f, 0.0f }
+#define VEC_FORWARD (Vector3){ 0.0f, 0.0f, 1.0f }

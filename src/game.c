@@ -8,14 +8,42 @@ const char* SCREEN_TITLE = "Space Race";
 const int SCREEN_WIDTH = 1200;
 const int SCREEN_HEIGHT = 720;
 
-const Vector3 VECTOR3_ZERO   = {0, 0, 0};
-const Vector3 VECTOR3_ONE   = {1, 1, 1};
-
-const Vector3 VECTOR3_FORWARD = {0, 0, 1};
-const Vector3 VECTOR3_UP      = {0, 1, 0};
-const Vector3 VECTOR3_RIGHT   = {1, 0, 0};
-
 int FPS_TARGET = 265;
+
+// private
+
+void InitGame()
+{
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);
+    SetTargetFPS(FPS_TARGET);
+
+    PlayerSpawn();
+}
+
+void Update()
+{
+    BeginDrawing();
+    ClearBackground(PURPLE);
+    BeginMode3D(GetPlayerCamera());
+    
+    DrawGrid(100, 1.0f); 
+
+    UpdateAllEntities();
+
+    EndMode3D();
+    DrawAllDebugMessages();
+    
+    DrawFPS(0, 0);
+    EndDrawing();
+}
+
+void EndGame()
+{
+    EndAllEntities();
+    CloseWindow();
+}
+
+// main loop
 
 int main()
 {
@@ -28,46 +56,4 @@ int main()
     EndGame();
 
     return 0;
-}
-
-void InitGame()
-{
-    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE);
-    SetTargetFPS(FPS_TARGET);
-
-    SpawnPlayer();
-}
-
-void Update()
-{
-    BeginDrawing();
-    ClearBackground(PURPLE);
-    BeginMode3D(PlayerCamera);
-    
-    DrawGrid(100, 1.0f); 
-
-    Entity* CurrentEntity;
-    for(int i = 0; i < entityCount; i++)
-    {
-        CurrentEntity = Entities[i];
-        CurrentEntity->Update();
-    }        
-    
-    EndMode3D();
-    DrawAllDebugMessages();
-    
-    DrawFPS(0, 0);
-    EndDrawing();
-}
-
-void EndGame()
-{
-    Entity* CurrentEntity;
-    for(int i = 0; i < entityCount; i++)
-    {
-        CurrentEntity = Entities[i];
-        CurrentEntity->End();
-    }
-
-    CloseWindow();
 }

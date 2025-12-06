@@ -7,6 +7,8 @@
 Entity* Entities[MAX_ENTITIES];
 int entityCount = 0;
 
+// public
+
 Entity* AddEntity(InitFunc InitFunc, UpdateFunc UpdateFunc, EndFunc EndFunc)
 {
     if (entityCount >= MAX_ENTITIES)
@@ -44,4 +46,26 @@ void RemoveEntity(int index)
     }
 
     entityCount--;
+}
+
+void UpdateAllEntities()
+{
+    Entity* CurrentEntity;
+    for(int i = 0; i < entityCount; i++)
+    {
+        CurrentEntity = Entities[i];
+        CurrentEntity->Update();
+    }        
+    
+}
+
+void EndAllEntities()
+{
+    Entity* CurrentEntity;
+    for(int i = 0; i < entityCount; i++)
+    {
+        CurrentEntity = Entities[i];
+        CurrentEntity->End();
+    }
+
 }
