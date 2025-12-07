@@ -8,3 +8,9 @@
 #define VEC_RIGHT   (Vector3){ 1.0f, 0.0f, 0.0f }
 #define VEC_UP      (Vector3){ 0.0f, 1.0f, 0.0f }
 #define VEC_FORWARD (Vector3){ 0.0f, 0.0f, 1.0f }
+
+#define VEC2_ZERO    (Vector2){ 0.0f, 0.0f }
+#define VEC2_ONE     (Vector2){ 1.0f, 1.0f }
+
+#define VEC2_RIGHT   (Vector2){ 1.0f, 0.0f }
+#define VEC2_UP      (Vector2){ 0.0f, 1.0f }

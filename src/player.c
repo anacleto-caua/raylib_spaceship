@@ -28,7 +28,7 @@ float ThrottleAsymmetry = 0;
 float ThrottleAsymAcc = 0;
 
 const float FLIGHT_STICK_DEADZONE_RADIUS = .2f;
-Vector2 FlightStickInput = {0, 0};
+Vector2 FlightStickInput = VEC2_ZERO;
 
 // helpers
 
@@ -61,9 +61,9 @@ void HandleMovementInput()
     float inputY = (((float)GetMouseY() / GetScreenHeight()) - .5) * 2;
     FlightStickInput = (Vector2){ inputX, inputY };
     
-    if(Vector2Distance(FlightStickInput, (Vector2){0, 0}) < FLIGHT_STICK_DEADZONE_RADIUS * 2)
+    if(Vector2Distance(FlightStickInput, VEC2_ZERO) < FLIGHT_STICK_DEADZONE_RADIUS * 2)
     {
-        FlightStickInput = (Vector2){0, 0};
+        FlightStickInput = VEC2_ZERO;
     }
     
     cap(&Speed, 0.0f, MAX_SPEED);
@@ -80,7 +80,7 @@ void PlayerSpawn()
 
 void PlayerInit()
 {
-    PlayerPos = (Vector3){0, 0, 0};
+    PlayerPos = VEC_ZERO;
     CameraPos = PlayerPos;
     CameraPos.z -= 25;
     CameraPos.y += 10;
