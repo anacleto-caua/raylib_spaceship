@@ -24,7 +24,7 @@ float ThrottleDeAcc = .5;
 
 const float MAX_SPEED = 700000000;
 float Speed = 0;
-float AirResistance = .5;
+float AirResistance = .7;
 float SpeedGainOnMaxThrottle = 50;
 
 float ThrottleAsymmetry = 0;
@@ -33,7 +33,7 @@ float ThrottleAsymAcc = 0;
 Vector2 FlightStickInput = VEC2_ZERO;
 float RollInput = 0;
 float RollSensi = 1000;
-float RollDecay = .1;
+float RollDecay = .01;
 
 float pitchSpeed = 1;
 float rollSpeed = 1;
@@ -69,7 +69,6 @@ void HandleMovementInput()
     float inputY = (((float)GetMouseY() / GetScreenHeight()) - .5) * 2;
     FlightStickInput = (Vector2){ inputX * inputX * inputX, inputY * inputY * inputY };
 
-    cap(&Speed, 0.0f, MAX_SPEED);
     cap(&Throttle, 0.0f, MaxThrottle);
     cap(&RollInput, -1.0f, +1.0f);
 }
@@ -133,8 +132,8 @@ void PlayerUpdate()
     Vector3 rotatedOffset = Vector3RotateByQuaternion(PLAYER_CAMERA_OFFSET, PlayerRot);
 
     // movement
-    Speed += Throttle * SpeedGainOnMaxThrottle * ft;
-    Speed -= AirResistance * ft;
+    Speed += Throttle * SpeedGainOnMaxThrottle;
+    Speed *= AirResistance;
     Vector3 PlayerMovement = Vector3Scale(currentForward, Speed * ft);
 
     PlayerPos = Vector3Add(PlayerPos, PlayerMovement);
