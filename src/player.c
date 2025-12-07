@@ -30,11 +30,15 @@ float SpeedGainOnMaxThrottle = 50;
 float ThrottleAsymmetry = 0;
 float ThrottleAsymAcc = 0;
 
-const float FLIGHT_STICK_DEADZONE_RADIUS = .2f;
 Vector2 FlightStickInput = VEC2_ZERO;
+float RollInput = 0;
+float RollSensi = 1000;
+float RollDecay = .1;
+
 float pitchSpeed = 1;
 float rollSpeed = 1;
 float yawSpeed = 1;
+
 float maneuverability = 1000;
 
 // helpers
@@ -50,32 +54,24 @@ void HandleMovementInput()
         Throttle -= ThrottleDeAcc * GetFrameTime();
     }
 
-    // TODO: Finish implementing throttle asymetry
     if(IsKeyDown(KEY_D))
     {
-        ThrottleAsymmetry += ThrottleAsymAcc * GetFrameTime();
+        RollInput += RollSensi;
     }
     else if(IsKeyDown(KEY_A))
     {
-        ThrottleAsymmetry -= ThrottleAsymAcc * GetFrameTime();
+        RollInput -= RollSensi;
     }
-    
-    Speed += Throttle * SpeedGainOnMaxThrottle * GetFrameTime();
-    Speed -= AirResistance * GetFrameTime();
+    RollInput *= RollDecay;
 
     // Gets the mouse input from -1 to 1
     float inputX = (((float)GetMouseX() / GetScreenWidth())  - .5) * 2;
     float inputY = (((float)GetMouseY() / GetScreenHeight()) - .5) * 2;
-    FlightStickInput = (Vector2){ inputX, inputY };
-    
-    if(Vector2Distance(FlightStickInput, VEC2_ZERO) < FLIGHT_STICK_DEADZONE_RADIUS * 2)
-    {
-        FlightStickInput = VEC2_ZERO;
-    }
-    
+    FlightStickInput = (Vector2){ inputX * inputX * inputX, inputY * inputY * inputY };
+
     cap(&Speed, 0.0f, MAX_SPEED);
     cap(&Throttle, 0.0f, MaxThrottle);
-    cap(&ThrottleAsymmetry, -1.0f, +1.0f);
+    cap(&RollInput, -1.0f, +1.0f);
 }
 
 // public
@@ -110,6 +106,7 @@ void PlayerInit()
     AddDebugMsg("Speed: ", TYPE_FLOAT, &Speed);
     AddDebugMsg("Throttle: ", TYPE_FLOAT, &Throttle);
     
+    AddDebugMsg("RollInput: ", TYPE_FLOAT, &RollInput);
     AddDebugMsg("FlightStick: ", TYPE_VECTOR2, &FlightStickInput);
 
     AddDebugMsg("PlayerPos: ", TYPE_VECTOR3, &PlayerPos);
@@ -117,12 +114,13 @@ void PlayerInit()
 
 void PlayerUpdate()
 {
+    float ft = GetFrameTime();
     HandleMovementInput();
 
     // rotation
-    Quaternion qPitch = QuaternionFromAxisAngle(VEC_RIGHT, FlightStickInput.y * pitchSpeed * GetFrameTime());
-    Quaternion qYaw   = QuaternionFromAxisAngle(VEC_UP, FlightStickInput.x * yawSpeed * -GetFrameTime());
-    Quaternion qRoll  = QuaternionFromAxisAngle(VEC_FORWARD, 0.0f);
+    Quaternion qPitch = QuaternionFromAxisAngle(VEC_RIGHT, FlightStickInput.y * pitchSpeed * ft);
+    Quaternion qYaw   = QuaternionFromAxisAngle(VEC_UP, FlightStickInput.x * yawSpeed * -ft);   //TODO: Find a better way to invert the yaw axis
+    Quaternion qRoll  = QuaternionFromAxisAngle(VEC_FORWARD, RollInput * rollSpeed * ft);
     
     // Combine them (Yaw -> Pitch -> Roll is standard order)
     Quaternion qFrame = QuaternionMultiply(qYaw, QuaternionMultiply(qPitch, qRoll));
@@ -135,10 +133,12 @@ void PlayerUpdate()
     Vector3 rotatedOffset = Vector3RotateByQuaternion(PLAYER_CAMERA_OFFSET, PlayerRot);
 
     // movement
-    Vector3 PlayerMovement = Vector3Scale(currentForward, Speed * GetFrameTime());
+    Speed += Throttle * SpeedGainOnMaxThrottle * ft;
+    Speed -= AirResistance * ft;
+    Vector3 PlayerMovement = Vector3Scale(currentForward, Speed * ft);
 
     PlayerPos = Vector3Add(PlayerPos, PlayerMovement);
-    CameraPos = Vector3Add(CameraPos, PlayerMovement);
+    CameraPos = Vector3Add(PlayerPos, rotatedOffset);;
     PlayerCamera.position = CameraPos;
     PlayerCamera.target = PlayerPos;
 
