@@ -26,7 +26,7 @@ void Update()
     ClearBackground(PURPLE);
     BeginMode3D(GetPlayerCamera());
     
-    DrawGrid(100, 1.0f); 
+    DrawGrid(1000, 10.0f); 
 
     UpdateAllEntities();
 
