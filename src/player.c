@@ -13,6 +13,7 @@ const Vector3 PLAYER_MODEL_LOCAL_FORWARD = (Vector3){1, 0, 0};
 
 Vector3 PlayerPos = VEC_ZERO;
 Vector3 CameraPos = VEC_ZERO;
+Matrix FixMatrix;
 
 float Throttle = 0;     // Throttle percent, how much both engines are working: 0 min to 1 max
 float MaxThrottle = 1;
@@ -29,6 +30,10 @@ float ThrottleAsymAcc = 0;
 
 const float FLIGHT_STICK_DEADZONE_RADIUS = .2f;
 Vector2 FlightStickInput = VEC2_ZERO;
+float pitchSpeed = 1;
+float rollSpeed = 1;
+float yawSpeed = 1;
+float maneuverability = 1000;
 
 // helpers
 
@@ -95,9 +100,11 @@ void PlayerInit()
     // Makes the player model look forward
     Quaternion rotationQ = QuaternionFromVector3ToVector3(PLAYER_MODEL_LOCAL_FORWARD, VEC_FORWARD);
     Matrix rotationMatrix = QuaternionToMatrix(rotationQ);
-    PlayerModel.transform = MatrixIdentity(); 
-    PlayerModel.transform = MatrixMultiply(rotationMatrix, PlayerModel.transform);
-    PlayerModel.transform = MatrixMultiply(PlayerModel.transform, MatrixTranslate(PlayerPos.x, PlayerPos.y, PlayerPos.z));
+    FixMatrix = MatrixIdentity(); 
+    FixMatrix = MatrixMultiply(rotationMatrix, FixMatrix);
+    FixMatrix = MatrixMultiply(FixMatrix, MatrixTranslate(PlayerPos.x, PlayerPos.y, PlayerPos.z));
+    
+    PlayerModel.transform = FixMatrix;
 
     AddDebugMsg("Speed: ", TYPE_FLOAT, &Speed);
     AddDebugMsg("Throttle: ", TYPE_FLOAT, &Throttle);
@@ -105,12 +112,34 @@ void PlayerInit()
     AddDebugMsg("FlightStick: ", TYPE_VECTOR2, &FlightStickInput);
 
     AddDebugMsg("PlayerPos: ", TYPE_VECTOR3, &PlayerPos);
-
 }
 
 void PlayerUpdate()
 {
     HandleMovementInput();
+
+    // rotation
+    Vector3 rot =
+        Vector3Scale(
+            (Vector3)
+            {
+                FlightStickInput.y * pitchSpeed,
+                FlightStickInput.x * yawSpeed,
+                0 
+            },
+            GetFrameTime() * maneuverability
+        );
+    
+    Matrix matrixSpin = MatrixRotateXYZ((Vector3){
+        rot.x * DEG2RAD,
+        rot.y * DEG2RAD,
+        rot.z * DEG2RAD 
+    });
+
+    Matrix TranformMatrix = MatrixMultiply(FixMatrix, matrixSpin);
+    PlayerModel.transform = TranformMatrix;
+
+    // movement
     Vector3 PlayerMovement = Vector3Scale(VEC_FORWARD, Speed * GetFrameTime());
 
     PlayerPos = Vector3Add(PlayerPos, PlayerMovement);
